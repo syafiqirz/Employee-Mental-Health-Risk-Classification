@@ -1,7 +1,7 @@
-# Laporan Proyek Machine Learning  - Muhammad Syafiq Irzaky
-# Prediksi Risiko Kesehatan Mental Pekerja Menggunakan Machine Learning
+# Laporan Proyek Machine Learning - Prediksi Risiko Kesehatan Mental Pekerja
+### Oleh Muhammad Syafiq Irzaky
 
-# Domain Proyek
+# 🌍 Domain Proyek
 
 ## 1. Latar Belakang
 
@@ -73,13 +73,13 @@ Setelah menentukan model _baseline_, dilakukan proses optimasi untuk meningkatka
 - Dibandingkan kembali menggunakan metrik yang sama untuk menilai peningkatan performa.  
 - Penekanan pada peningkatan **recall** untuk memastikan sebanyak mungkin individu berisiko tinggi dapat terdeteksi.  
 
-## 🧠 Data Understanding
+# 🧠 Data Understanding
 
-### 📁 Deskripsi Dataset
+## Deskripsi Dataset
 
 Dataset yang digunakan dalam proyek ini berasal dari [Kaggle Mental Health Dataset](https://www.kaggle.com/datasets/mahdimashayekhi/mental-health). Dataset ini merupakan hasil simulasi sintetis dari survei global mengenai kesehatan mental di tempat kerja yang melibatkan 10.000 responden. Data ini mencerminkan pola nyata berdasarkan survei publik terkait kesehatan mental, namun telah dianonimkan sepenuhnya untuk menjamin privasi.
 
-### 🎯 Tujuan dan Kegunaan Dataset
+## Tujuan dan Kegunaan Dataset
 
 Dataset ini dirancang untuk mendukung berbagai eksperimen dalam analisis kesehatan mental di tempat kerja, di antaranya:
 - Memprediksi kemungkinan seseorang mencari bantuan profesional.
@@ -89,11 +89,11 @@ Dataset ini dirancang untuk mendukung berbagai eksperimen dalam analisis kesehat
 
 Dataset ini ideal untuk pelatihan model machine learning, eksplorasi fairness, dan pembuatan sistem prediksi berbasis risiko kesehatan mental.
 
-### ⚙️ Data yang Digunakan
+## Data yang Digunakan
 
 Dari total 10.000 data, proyek ini difokuskan pada **pekerja saja** (`employment_status = Employed`) sehingga data yang dianalisis adalah sebanyak **5.868 baris**. Setelah difilter, kolom `employment_status` dihapus karena seluruh nilainya homogen.
 
-### 📊 Struktur Dataset
+## Struktur Dataset
 
 Berikut adalah informasi awal dari dataset berdasarkan fungsi `df.info()` dan `df.describe()`:
 
@@ -104,9 +104,9 @@ Berikut adalah informasi awal dari dataset berdasarkan fungsi `df.info()` dan `d
   - `depression_score`: 0 – 30
   - `productivity_score`: 42.8 – 100
 
-### 🧾 Deskripsi Fitur
+## Deskripsi Fitur
 
-#### 🏷️ Fitur Kategorikal
+### Fitur Kategorikal
 
 - **gender**  
   Jenis kelamin responden. Nilai: `Male`, `Female`, `Non-binary`, `Prefer not to say`.
@@ -123,7 +123,7 @@ Berikut adalah informasi awal dari dataset berdasarkan fungsi `df.info()` dan `d
 - **mental_health_risk**  
   Kategori risiko kesehatan mental yang dimiliki responden. Nilai: `Low`, `Medium`, `High`. Ini adalah **target variabel** yang akan diprediksi dalam proyek klasifikasi.
 
-#### 🔢 Fitur Numerikal
+### Fitur Numerikal
 
 - **age**  
   Usia responden dalam rentang 18–65 tahun.
@@ -149,7 +149,7 @@ Berikut adalah informasi awal dari dataset berdasarkan fungsi `df.info()` dan `d
 - **productivity_score**  
   Skor produktivitas kerja (0–100), makin tinggi makin baik.
 
-### 🔍 Ringkasan Eksplorasi (Exploratory)
+## Ringkasan Eksplorasi (Exploratory)
 - Dataset berisi 5868 baris data lengkap.
 - Semua fitur memiliki tipe data sesuai konteks penggunaannya.
 - Tidak terdapat missing values, sehingga tidak diperlukan penanganan imputasi.
@@ -161,17 +161,24 @@ Berikut adalah informasi awal dari dataset berdasarkan fungsi `df.info()` dan `d
 - Fitur `depression_score`, `anxiety_score`, dan `productivity_score` menunjukkan korelasi kuat dengan target dan dipertahankan untuk model prediktif.
 - Variabel kategorikal menunjukkan distribusi yang relatif seimbang, meskipun terdapat ketimpangan pada target `mental_health_risk`.
 
-## Data Preparation
+# ⚙️ Data Preparation
 
 Tahapan data preparation dilakukan untuk memastikan bahwa data dalam kondisi optimal sebelum digunakan dalam proses modeling. Langkah-langkah dilakukan secara berurutan sebagai berikut:
 
-### 1. Filter Gender yang Relevan
+## 1. Filter Gender yang Relevan
 Hanya responden dengan gender "Male" dan "Female" yang disertakan dalam analisis. Data dengan gender seperti "Non-binary" atau "Prefer not to say" dihapus karena jumlahnya sangat kecil dan berpotensi menimbulkan noise dalam pemodelan. Setelah itu, indeks dataset di-reset agar lebih rapi.
 
-### 2. Encoding Variabel Kategorikal
-#### Encoding Secara Manual
+## 2. Encoding Variabel Kategorikal
+### Encoding Secara Manual
 
-Encoding dilakukan secara manual menggunakan `map()` karena lebih sederhana, transparan, dan memberikan kontrol penuh terhadap urutan nilai numerik—terutama untuk fitur ordinal seperti `work_environment`. Selain itu, teknik ini efisien untuk variabel biner dan menghindari overhead tambahan dari library encoder.
+**Label Encoding** adalah teknik preprocessing data yang mengubah nilai kategorikal (seperti "Male"/"Female") menjadi nilai numerik (0/1). 
+
+Tujuan utamanya:
+1. Memungkinkan algoritma machine learning memproses data kategorikal
+2. Mengkonversi teks menjadi format numerik yang bisa diolah komputer
+3. Mempertahankan urutan jika variabel bersifat ordinal (misal: "Low"=0, "Medium"=1, "High"=2)
+
+Pada project ini, encoding dilakukan secara manual menggunakan `map()` karena lebih sederhana, transparan, dan memberikan kontrol penuh terhadap urutan nilai numerik—terutama untuk fitur ordinal seperti `work_environment`. Selain itu, teknik ini efisien untuk variabel biner dan menghindari overhead tambahan dari library encoder.
 
 Beberapa variabel kategorikal diubah menjadi representasi numerik:
 - Variabel `gender` diubah menjadi format numerik agar dapat diproses oleh model machine learning:
@@ -183,21 +190,21 @@ Beberapa variabel kategorikal diubah menjadi representasi numerik:
   - On-site → 2
 - `mental_health_history` dan `seeks_treatment`: diubah menjadi format biner (Yes → 1, No → 0)
 
-### 3. Encoding Target: mental_health_risk
+## 3. Encoding Target: mental_health_risk
 Kolom target `mental_health_risk` dikonversi ke format numerik agar bisa digunakan untuk klasifikasi:
 - Low → 0
 - Medium → 1
 - High → 2
 Kolom `mental_health_risk_encoded` yang sebelumnya dibuat manual kemudian dihapus karena sudah tidak diperlukan lagi.
 
-### 4. Standarisasi Fitur Numerikal
+## 4. Standarisasi Fitur Numerikal
 Fitur numerik seperti `depression_score`, `anxiety_score`, dan `productivity_score` memiliki skala yang berbeda. Untuk menyamakan skala dan mencegah bias algoritma terhadap fitur tertentu, dilakukan standarisasi menggunakan `StandardScaler`, sehingga semua fitur memiliki:
 - Rata-rata = 0
 - Standar deviasi = 1
 
 Standarisasi sangat penting terutama untuk algoritma berbasis jarak seperti KNN dan SVM.
 
-### 5. Train-Test Split
+## 5. Train-Test Split
 Data dibagi menjadi dua bagian:
 - **Training set (90%)**: untuk melatih model
 - **Testing set (10%)**: untuk menguji performa model terhadap data yang belum pernah dilihat
@@ -211,11 +218,11 @@ Ukuran data setelah pembagian:
 
 Pembagian ini bertujuan untuk menghindari overfitting dan memungkinkan evaluasi model secara objektif.
 
-## Modeling
+# 🧮 Modeling
 
 Tahap ini berfokus pada pembangunan model machine learning untuk mengklasifikasikan tingkat risiko kesehatan mental berdasarkan fitur-fitur yang telah diproses. Untuk memperoleh gambaran performa awal dan membandingkan efektivitas berbagai algoritma, digunakan **lima model klasifikasi populer** sebagai baseline dengan **hyperparameter default**. Tujuan utamanya adalah mengidentifikasi model terbaik untuk dioptimalkan lebih lanjut pada tahap selanjutnya.
 
-### Model yang Digunakan
+## Model yang Digunakan
 
 Berikut lima model klasifikasi yang digunakan:
 
@@ -234,7 +241,7 @@ Berikut lima model klasifikasi yang digunakan:
 5. **Naive Bayes (NB)**  
    NB adalah model probabilistik yang mengasumsikan independensi antar fitur. Meskipun sederhana, model ini sering memberikan hasil yang kompetitif, terutama jika data sudah bersih dan variabel relevan.
 
-### Alasan Penggunaan Banyak Model
+## Alasan Penggunaan Banyak Model
 
 Penggunaan lima model ini bertujuan untuk:
 - **Membandingkan performa awal (baseline)** dari berbagai pendekatan klasifikasi.
@@ -243,42 +250,46 @@ Penggunaan lima model ini bertujuan untuk:
 
 Seluruh model dilatih menggunakan data training dan diuji dengan data testing yang telah dipisahkan sebelumnya. Evaluasi dilakukan dengan metrik akurasi, precision, recall, dan f1-score untuk memperoleh gambaran menyeluruh terhadap performa model.
 
-## Evaluation
+# 💯 Evaluation
 
 Tahap evaluasi bertujuan untuk menilai performa model dalam mengklasifikasikan tingkat risiko kesehatan mental berdasarkan fitur-fitur yang tersedia. Evaluasi dilakukan menggunakan metrik standar untuk kasus klasifikasi, yaitu **akurasi**, **precision**, **recall**, dan **F1-score**. Selain itu, **confusion matrix** digunakan untuk melihat distribusi prediksi model terhadap kelas-kelas yang ada.
 
-### Metrik Evaluasi yang Digunakan
+## Metrik Evaluasi yang Digunakan
 
 - **Akurasi** mengukur proporsi prediksi yang benar dari keseluruhan prediksi.
-  
-  \[
-  \text{Akurasi} = \frac{\text{Jumlah Prediksi Benar}}{\text{Total Prediksi}}
-  \]
+```
+Accuracy = (True Positive + True Negative) / (True Positive + True Negative + False Positive + False Negative)
+```
 
 - **Precision** menghitung seberapa banyak prediksi positif yang benar.
-  
-  \[
-  \text{Precision} = \frac{\text{True Positive}}{\text{True Positive + False Positive}}
-  \]
+```
+Precision = True Positive / (True Positive + False Positive)
+```
 
 - **Recall** mengukur kemampuan model dalam menangkap seluruh data positif yang benar.
-  
-  \[
-  \text{Recall} = \frac{\text{True Positive}}{\text{True Positive + False Negative}}
-  \]
+```
+Recall = True Positive / (True Positive + False Negative)
+```
 
 - **F1-Score** adalah rata-rata harmonik dari precision dan recall, memberikan keseimbangan di antara keduanya.
-  
-  \[
-  \text{F1-Score} = 2 \cdot \frac{\text{Precision} \cdot \text{Recall}}{\text{Precision + Recall}}
-  \]
+```
+F1-Score = 2 * (Precision * Recall) / (Precision + Recall)
+```
 
-### Hasil Evaluasi
+## Hasil Evaluasi pada Data Latih
 
-#### Evaluasi pada Data Latih
+| Model             | Akurasi | Precision (avg)  | Recall (avg)  | F1-score (avg) |
+|-------------------|---------|------------------|---------------|----------------|
+| KNN               | 0.96    | 0.96             | 0.96          | 0.96           |
+| Decision Tree     | 1.00    | 1.00             | 1.00          | 1.00           |
+| Random Forest     | 1.00    | 1.00             | 1.00          | 1.00           |
+| SVM               | 0.99    | 0.99             | 0.99          | 0.99           |
+| Naive Bayes       | 0.88    | 0.87             | 0.87          | 0.87           |
+
+**Interpretasi:**
 Model seperti **Decision Tree** dan **Random Forest** mencapai akurasi 100% pada data latih, mengindikasikan kemungkinan **overfitting**, yakni ketika model terlalu menghafal data tanpa kemampuan generalisasi yang baik. Model **SVM** dan **KNN** juga menunjukkan performa tinggi (masing-masing 99% dan 96%), sementara **Naive Bayes** sedikit lebih rendah (88%).
 
-#### Evaluasi pada Data Uji
+## Evaluasi pada Data Uji
 
 | Model              | Akurasi | Precision (avg) | Recall (avg) | F1-score (avg) |
 |-------------------|---------|------------------|---------------|----------------|
@@ -286,7 +297,7 @@ Model seperti **Decision Tree** dan **Random Forest** mencapai akurasi 100% pada
 | Decision Tree     | 1.00    | 1.00             | 1.00          | 1.00           |
 | Random Forest     | 0.98    | 0.98             | 0.98          | 0.98           |
 | SVM               | 0.98    | 0.98             | 0.98          | 0.98           |
-| Naive Bayes       | 0.87    | 0.87             | 0.85          | 0.85           |
+| Naive Bayes       | 0.87    | 0.86             | 0.85          | 0.85           |
 
 **Interpretasi:**
 
@@ -298,18 +309,13 @@ Model seperti **Decision Tree** dan **Random Forest** mencapai akurasi 100% pada
 
 - **Naive Bayes** mencatat akurasi terendah, kemungkinan karena asumsi independensi antar fitur tidak sepenuhnya berlaku pada data ini.
 
-### Kesimpulan
+# 📋 Kesimpulan
 
 Berdasarkan evaluasi:
-- **Random Forest** dan **SVM** menjadi dua model terbaik karena menghasilkan metrik yang tinggi dan seimbang.
-- **Decision Tree** meskipun akurasinya sempurna, perlu ditinjau lebih lanjut karena berpotensi overfitting.
-- Evaluasi metrik memberikan dasar kuat untuk memilih model terbaik yang akan dioptimalkan melalui proses **hyperparameter tuning** pada tahap selanjutnya.
+- **Decision Tree** memiliki akurasi sempurna, baik saat dites menggunakan data latih maupun data uji. Perlu ditinjau lebih lanjut karena berpotensi overfitting.
+- **Random Forest** dan **SVM** menjadi dua alternatif model terbaik karena menghasilkan metrik yang tinggi, seimbang, dan konsisten.
 
-Langkah selanjutnya adalah melakukan **improvement terhadap model terbaik** untuk meningkatkan performa dan menghindari potensi overfitting.
-
-**---Ini adalah bagian akhir laporan---**
-
-_Catatan:_
-- _Anda dapat menambahkan gambar, kode, atau tabel ke dalam laporan jika diperlukan. Temukan caranya pada contoh dokumen markdown di situs editor [Dillinger](https://dillinger.io/), [Github Guides: Mastering markdown](https://guides.github.com/features/mastering-markdown/), atau sumber lain di internet. Semangat!_
-- Jika terdapat penjelasan yang harus menyertakan code snippet, tuliskan dengan sewajarnya. Tidak perlu menuliskan keseluruhan kode project, cukup bagian yang ingin dijelaskan saja.
-
+## Rekomendasi:
+- Model **Decision Tree** cocok digunakan jika data memiliki dimensionalitas (jumlah fitur) dan varians antar fitur yang rendah. Model ini mudah dipahami dan diinterpretasikan, tetapi performanya dapat menurun secara signifikan ketika dihadapkan dengan data yang memiliki variansi tinggi atau mengandung banyak noise.
+- Model **Random Forest** adalah pilihan yang lebih seimbang dan umumnya lebih andal. Model ini menghasilkan akurasi yang tinggi dan konsisten, serta cukup robust terhadap data berdimensionalitas tinggi maupun varians fitur yang besar. Selain itu, Random Forest lebih toleran terhadap outlier dan noise kecil, sehingga cocok digunakan untuk data dunia nyata yang sering kali tidak bersih atau memiliki ketidakteraturan.
+- Sama seperti **Random Forest**, **SVM** juga menawarkan performa yang baik dan dapat menangani data dengan margin yang kompleks. Namun, model ini relatif lebih kompleks untuk dilatih, terutama pada dataset besar dan berdimensionalitas tinggi. Selain itu, SVM cenderung kurang toleran terhadap outlier dan perbedaan distribusi antara data latih dan data aktual di lapangan, yang dapat menyebabkan penurunan performa jika data tidak distandarkan atau dibersihkan dengan baik.
