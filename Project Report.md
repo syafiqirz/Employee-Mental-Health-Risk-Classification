@@ -162,31 +162,150 @@ Berikut adalah informasi awal dari dataset berdasarkan fungsi `df.info()` dan `d
 - Variabel kategorikal menunjukkan distribusi yang relatif seimbang, meskipun terdapat ketimpangan pada target `mental_health_risk`.
 
 ## Data Preparation
-Pada bagian ini Anda menerapkan dan menyebutkan teknik data preparation yang dilakukan. Teknik yang digunakan pada notebook dan laporan harus berurutan.
 
-**Rubrik/Kriteria Tambahan (Opsional)**: 
-- Menjelaskan proses data preparation yang dilakukan
-- Menjelaskan alasan mengapa diperlukan tahapan data preparation tersebut.
+Tahapan data preparation dilakukan untuk memastikan bahwa data dalam kondisi optimal sebelum digunakan dalam proses modeling. Langkah-langkah dilakukan secara berurutan sebagai berikut:
+
+### 1. Filter Gender yang Relevan
+Hanya responden dengan gender "Male" dan "Female" yang disertakan dalam analisis. Data dengan gender seperti "Non-binary" atau "Prefer not to say" dihapus karena jumlahnya sangat kecil dan berpotensi menimbulkan noise dalam pemodelan. Setelah itu, indeks dataset di-reset agar lebih rapi.
+
+### 2. Encoding Variabel Kategorikal
+#### Encoding Secara Manual
+
+Encoding dilakukan secara manual menggunakan `map()` karena lebih sederhana, transparan, dan memberikan kontrol penuh terhadap urutan nilai numerik—terutama untuk fitur ordinal seperti `work_environment`. Selain itu, teknik ini efisien untuk variabel biner dan menghindari overhead tambahan dari library encoder.
+
+Beberapa variabel kategorikal diubah menjadi representasi numerik:
+- Variabel `gender` diubah menjadi format numerik agar dapat diproses oleh model machine learning:
+  - Male → 0
+  - Female → 1
+- `work_environment`: dikodekan berdasarkan urutan logis dari fleksibel ke kaku:
+  - Remote → 0
+  - Hybrid → 1
+  - On-site → 2
+- `mental_health_history` dan `seeks_treatment`: diubah menjadi format biner (Yes → 1, No → 0)
+
+### 3. Encoding Target: mental_health_risk
+Kolom target `mental_health_risk` dikonversi ke format numerik agar bisa digunakan untuk klasifikasi:
+- Low → 0
+- Medium → 1
+- High → 2
+Kolom `mental_health_risk_encoded` yang sebelumnya dibuat manual kemudian dihapus karena sudah tidak diperlukan lagi.
+
+### 4. Standarisasi Fitur Numerikal
+Fitur numerik seperti `depression_score`, `anxiety_score`, dan `productivity_score` memiliki skala yang berbeda. Untuk menyamakan skala dan mencegah bias algoritma terhadap fitur tertentu, dilakukan standarisasi menggunakan `StandardScaler`, sehingga semua fitur memiliki:
+- Rata-rata = 0
+- Standar deviasi = 1
+
+Standarisasi sangat penting terutama untuk algoritma berbasis jarak seperti KNN dan SVM.
+
+### 5. Train-Test Split
+Data dibagi menjadi dua bagian:
+- **Training set (90%)**: untuk melatih model
+- **Testing set (10%)**: untuk menguji performa model terhadap data yang belum pernah dilihat
+
+Pemisahan dilakukan dengan parameter `random_state=123` agar hasilnya konsisten setiap kali dijalankan ulang.
+
+Ukuran data setelah pembagian:
+- Total data: 5.290 sampel
+- Training set: 4.232 sampel
+- Testing set: 1.058 sampel
+
+Pembagian ini bertujuan untuk menghindari overfitting dan memungkinkan evaluasi model secara objektif.
 
 ## Modeling
-Tahapan ini membahas mengenai model machine learning yang digunakan untuk menyelesaikan permasalahan. Anda perlu menjelaskan tahapan dan parameter yang digunakan pada proses pemodelan.
 
-**Rubrik/Kriteria Tambahan (Opsional)**: 
-- Menjelaskan kelebihan dan kekurangan dari setiap algoritma yang digunakan.
-- Jika menggunakan satu algoritma pada solution statement, lakukan proses improvement terhadap model dengan hyperparameter tuning. **Jelaskan proses improvement yang dilakukan**.
-- Jika menggunakan dua atau lebih algoritma pada solution statement, maka pilih model terbaik sebagai solusi. **Jelaskan mengapa memilih model tersebut sebagai model terbaik**.
+Tahap ini berfokus pada pembangunan model machine learning untuk mengklasifikasikan tingkat risiko kesehatan mental berdasarkan fitur-fitur yang telah diproses. Untuk memperoleh gambaran performa awal dan membandingkan efektivitas berbagai algoritma, digunakan **lima model klasifikasi populer** sebagai baseline dengan **hyperparameter default**. Tujuan utamanya adalah mengidentifikasi model terbaik untuk dioptimalkan lebih lanjut pada tahap selanjutnya.
+
+### Model yang Digunakan
+
+Berikut lima model klasifikasi yang digunakan:
+
+1. **K-Nearest Neighbors (KNN)**  
+   KNN mengklasifikasikan sampel baru berdasarkan mayoritas label dari `k` tetangga terdekat dalam ruang fitur. Model ini cocok digunakan karena data telah melalui proses standarisasi, yang sangat penting dalam algoritma berbasis jarak seperti KNN.
+
+2. **Decision Tree (DT)**  
+   DT membangun struktur pohon berdasarkan pembagian informasi (information gain) untuk memisahkan kelas target. Algoritma ini mampu menangkap interaksi antar fitur dan memberikan interpretasi yang jelas terhadap proses klasifikasi.
+
+3. **Random Forest (RF)**  
+   RF adalah algoritma ensemble yang membangun banyak pohon keputusan dan menggabungkan prediksinya untuk meningkatkan akurasi dan mengurangi overfitting. Cocok untuk dataset dengan fitur heterogen dan kompleks, serta tahan terhadap outlier.
+
+4. **Support Vector Machine (SVM)**  
+   SVM bekerja dengan mencari hyperplane terbaik yang memisahkan kelas dalam ruang fitur berdimensi tinggi. Penggunaan SVM didukung oleh standarisasi fitur, karena SVM sangat sensitif terhadap skala data.
+
+5. **Naive Bayes (NB)**  
+   NB adalah model probabilistik yang mengasumsikan independensi antar fitur. Meskipun sederhana, model ini sering memberikan hasil yang kompetitif, terutama jika data sudah bersih dan variabel relevan.
+
+### Alasan Penggunaan Banyak Model
+
+Penggunaan lima model ini bertujuan untuk:
+- **Membandingkan performa awal (baseline)** dari berbagai pendekatan klasifikasi.
+- **Mengidentifikasi model yang paling sesuai** dengan karakteristik data.
+- Menjadi dasar dalam proses **seleksi dan tuning model terbaik** pada tahap selanjutnya.
+
+Seluruh model dilatih menggunakan data training dan diuji dengan data testing yang telah dipisahkan sebelumnya. Evaluasi dilakukan dengan metrik akurasi, precision, recall, dan f1-score untuk memperoleh gambaran menyeluruh terhadap performa model.
 
 ## Evaluation
-Pada bagian ini anda perlu menyebutkan metrik evaluasi yang digunakan. Lalu anda perlu menjelaskan hasil proyek berdasarkan metrik evaluasi yang digunakan.
 
-Sebagai contoh, Anda memiih kasus klasifikasi dan menggunakan metrik **akurasi, precision, recall, dan F1 score**. Jelaskan mengenai beberapa hal berikut:
-- Penjelasan mengenai metrik yang digunakan
-- Menjelaskan hasil proyek berdasarkan metrik evaluasi
+Tahap evaluasi bertujuan untuk menilai performa model dalam mengklasifikasikan tingkat risiko kesehatan mental berdasarkan fitur-fitur yang tersedia. Evaluasi dilakukan menggunakan metrik standar untuk kasus klasifikasi, yaitu **akurasi**, **precision**, **recall**, dan **F1-score**. Selain itu, **confusion matrix** digunakan untuk melihat distribusi prediksi model terhadap kelas-kelas yang ada.
 
-Ingatlah, metrik evaluasi yang digunakan harus sesuai dengan konteks data, problem statement, dan solusi yang diinginkan.
+### Metrik Evaluasi yang Digunakan
 
-**Rubrik/Kriteria Tambahan (Opsional)**: 
-- Menjelaskan formula metrik dan bagaimana metrik tersebut bekerja.
+- **Akurasi** mengukur proporsi prediksi yang benar dari keseluruhan prediksi.
+  
+  \[
+  \text{Akurasi} = \frac{\text{Jumlah Prediksi Benar}}{\text{Total Prediksi}}
+  \]
+
+- **Precision** menghitung seberapa banyak prediksi positif yang benar.
+  
+  \[
+  \text{Precision} = \frac{\text{True Positive}}{\text{True Positive + False Positive}}
+  \]
+
+- **Recall** mengukur kemampuan model dalam menangkap seluruh data positif yang benar.
+  
+  \[
+  \text{Recall} = \frac{\text{True Positive}}{\text{True Positive + False Negative}}
+  \]
+
+- **F1-Score** adalah rata-rata harmonik dari precision dan recall, memberikan keseimbangan di antara keduanya.
+  
+  \[
+  \text{F1-Score} = 2 \cdot \frac{\text{Precision} \cdot \text{Recall}}{\text{Precision + Recall}}
+  \]
+
+### Hasil Evaluasi
+
+#### Evaluasi pada Data Latih
+Model seperti **Decision Tree** dan **Random Forest** mencapai akurasi 100% pada data latih, mengindikasikan kemungkinan **overfitting**, yakni ketika model terlalu menghafal data tanpa kemampuan generalisasi yang baik. Model **SVM** dan **KNN** juga menunjukkan performa tinggi (masing-masing 99% dan 96%), sementara **Naive Bayes** sedikit lebih rendah (88%).
+
+#### Evaluasi pada Data Uji
+
+| Model              | Akurasi | Precision (avg) | Recall (avg) | F1-score (avg) |
+|-------------------|---------|------------------|---------------|----------------|
+| KNN               | 0.94    | 0.94             | 0.92          | 0.93           |
+| Decision Tree     | 1.00    | 1.00             | 1.00          | 1.00           |
+| Random Forest     | 0.98    | 0.98             | 0.98          | 0.98           |
+| SVM               | 0.98    | 0.98             | 0.98          | 0.98           |
+| Naive Bayes       | 0.87    | 0.87             | 0.85          | 0.85           |
+
+**Interpretasi:**
+
+- **Decision Tree** menunjukkan akurasi sempurna bahkan di data uji, namun ini jarang terjadi dan mengindikasikan kemungkinan **overfitting**, meskipun hasilnya sangat baik.
+
+- **Random Forest** dan **SVM** menampilkan hasil sangat tinggi dan konsisten (98%), menjadikannya kandidat kuat karena mampu menangkap pola kompleks sekaligus menjaga generalisasi yang baik.
+
+- **KNN** menurun sedikit pada recall, terutama di kelas minoritas, namun tetap menunjukkan generalisasi yang solid dengan akurasi 94%.
+
+- **Naive Bayes** mencatat akurasi terendah, kemungkinan karena asumsi independensi antar fitur tidak sepenuhnya berlaku pada data ini.
+
+### Kesimpulan
+
+Berdasarkan evaluasi:
+- **Random Forest** dan **SVM** menjadi dua model terbaik karena menghasilkan metrik yang tinggi dan seimbang.
+- **Decision Tree** meskipun akurasinya sempurna, perlu ditinjau lebih lanjut karena berpotensi overfitting.
+- Evaluasi metrik memberikan dasar kuat untuk memilih model terbaik yang akan dioptimalkan melalui proses **hyperparameter tuning** pada tahap selanjutnya.
+
+Langkah selanjutnya adalah melakukan **improvement terhadap model terbaik** untuk meningkatkan performa dan menghindari potensi overfitting.
 
 **---Ini adalah bagian akhir laporan---**
 
