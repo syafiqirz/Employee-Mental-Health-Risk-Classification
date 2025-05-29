@@ -166,7 +166,7 @@ Berikut adalah informasi awal dari dataset berdasarkan fungsi `df.info()` dan `d
 Tahapan data preparation dilakukan untuk memastikan bahwa data dalam kondisi optimal sebelum digunakan dalam proses modeling. Langkah-langkah dilakukan secara berurutan sebagai berikut:
 
 ## 1. Filter Gender yang Relevan
-Hanya responden dengan gender "Male" dan "Female" yang disertakan dalam analisis. Data dengan gender seperti "Non-binary" atau "Prefer not to say" dihapus karena jumlahnya sangat kecil dan berpotensi menimbulkan noise dalam pemodelan. Setelah itu, indeks dataset di-reset agar lebih rapi.
+Hanya responden dengan gender "Male" dan "Female" yang disertakan dalam analisis. Data dengan gender seperti "Non-binary" atau "Prefer not to say" dihapus karena jumlahnya sangat kecil dan berpotensi menimbulkan noise dalam pemodelan. Setelah itu, indeks dataset di-reset agar lebih rapi. Setelah difilter menurut fitur Gender, record data yang tersisa berjumlah **5.920** record data.
 
 ## 2. Encoding Variabel Kategorikal
 ### Encoding Secara Manual
