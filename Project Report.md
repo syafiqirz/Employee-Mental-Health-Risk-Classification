@@ -226,20 +226,81 @@ Tahap ini berfokus pada pembangunan model machine learning untuk mengklasifikasi
 
 Berikut lima model klasifikasi yang digunakan:
 
-1. **K-Nearest Neighbors (KNN)**  
-   KNN mengklasifikasikan sampel baru berdasarkan mayoritas label dari `k` tetangga terdekat dalam ruang fitur. Model ini cocok digunakan karena data telah melalui proses standarisasi, yang sangat penting dalam algoritma berbasis jarak seperti KNN.
+### 1. **K-Nearest Neighbors (KNN)**  
+KNN mengklasifikasikan sampel baru berdasarkan mayoritas label dari k tetangga terdekat dalam ruang fitur. Model ini cocok digunakan karena data telah melalui proses standarisasi, yang sangat penting dalam algoritma berbasis jarak seperti KNN.
 
-2. **Decision Tree (DT)**  
-   DT membangun struktur pohon berdasarkan pembagian informasi (information gain) untuk memisahkan kelas target. Algoritma ini mampu menangkap interaksi antar fitur dan memberikan interpretasi yang jelas terhadap proses klasifikasi.
+**Hyperparameter Default:**
+```python
+KNeighborsClassifier(
+    n_neighbors=5,       # Jumlah tetangga yang digunakan
+    weights='uniform',   # Bobot: 'uniform' (sama) atau 'distance' (berdasarkan jarak)
+    algorithm='auto',    # Algoritma: 'auto', 'ball_tree', 'kd_tree', atau 'brute'
+    leaf_size=30,        # Ukuran leaf untuk struktur tree
+    p=2,                 # Parameter jarak (1=manhattan, 2=euclidean)
+    metric='minkowski'   # Metrik jarak
+)
+```
+### 2. **Decision Tree (DT)**  
+DT membangun struktur pohon berdasarkan pembagian informasi (information gain) untuk memisahkan kelas target. Algoritma ini mampu menangkap interaksi antar fitur dan memberikan interpretasi yang jelas terhadap proses klasifikasi.
+**Hyperparameter Default:**
+```python
+DecisionTreeClassifier(
+    criterion='gini',     # Kriteria split: 'gini' atau 'entropy'
+    splitter='best',      # Strategi split: 'best' atau 'random'
+    max_depth=None,       # Kedalaman maksimal pohon (None=tanpa batas)
+    min_samples_split=2,  # Minimum sampel untuk split node
+    min_samples_leaf=1,   # Minimum sampel di leaf node
+    min_weight_fraction_leaf=0.0,
+    max_features=None,    # Jumlah fitur yang dipertimbangkan untuk split
+    random_state=None,
+    max_leaf_nodes=None   # Jumlah maksimal leaf nodes
+)
+```
 
-3. **Random Forest (RF)**  
-   RF adalah algoritma ensemble yang membangun banyak pohon keputusan dan menggabungkan prediksinya untuk meningkatkan akurasi dan mengurangi overfitting. Cocok untuk dataset dengan fitur heterogen dan kompleks, serta tahan terhadap outlier.
+### 3. **Random Forest (RF)**  
+RF adalah algoritma ensemble yang membangun banyak pohon keputusan dan menggabungkan prediksinya untuk meningkatkan akurasi dan mengurangi overfitting. Cocok untuk dataset dengan fitur heterogen dan kompleks, serta tahan terhadap outlier.
+**Hyperparameter Default:**
+```python
+RandomForestClassifier(
+    n_estimators=100,     # Jumlah pohon dalam ensemble
+    criterion='gini',     # Kriteria split: 'gini' atau 'entropy'
+    max_depth=None,       # Kedalaman maksimal per pohon
+    min_samples_split=2,
+    min_samples_leaf=1,
+    min_weight_fraction_leaf=0.0,
+    max_features='auto',  # Jumlah fitur: 'auto'=sqrt(n_features)
+    max_leaf_nodes=None,
+    bootstrap=True,       # Penggunaan bootstrap sampling
+    random_state=None
+)
+```
 
-4. **Support Vector Machine (SVM)**  
-   SVM bekerja dengan mencari hyperplane terbaik yang memisahkan kelas dalam ruang fitur berdimensi tinggi. Penggunaan SVM didukung oleh standarisasi fitur, karena SVM sangat sensitif terhadap skala data.
+### 4. **Support Vector Machine (SVM)**  
+SVM bekerja dengan mencari hyperplane terbaik yang memisahkan kelas dalam ruang fitur berdimensi tinggi. Penggunaan SVM didukung oleh standarisasi fitur, karena SVM sangat sensitif terhadap skala data.
+**Hyperparameter Default:**
+```python
+SVC(
+    C=1.0,               # Parameter regularisasi
+    kernel='rbf',        # Jenis kernel: 'linear', 'poly', 'rbf', 'sigmoid'
+    degree=3,            # Derajat untuk kernel poly
+    gamma='scale',       # Koefisien kernel:'scale'=1/(n_features*X.var())
+    coef0=0.0,          # Term independen dalam kernel
+    shrinking=True,      # Menggunakan shrinking heuristic
+    probability=False,   # Mengestimasi probabilitas
+    tol=1e-3,            # Toleransi kriteria stopping
+    max_iter=-1          # Maksimum iterasi (-1=no limit)
+)
+```
 
-5. **Naive Bayes (NB)**  
-   NB adalah model probabilistik yang mengasumsikan independensi antar fitur. Meskipun sederhana, model ini sering memberikan hasil yang kompetitif, terutama jika data sudah bersih dan variabel relevan.
+### 5. **Naive Bayes (NB)**  
+NB adalah model probabilistik yang mengasumsikan independensi antar fitur. Meskipun sederhana, model ini sering memberikan hasil yang kompetitif, terutama jika data sudah bersih dan variabel relevan.
+**Hyperparameter Default:**
+```python
+GaussianNB(
+    priors=None,         # Probabilitas prior kelas
+    var_smoothing=1e-9   # Penambahan varians untuk stabilitas numerik
+)
+```
 
 ## Alasan Penggunaan Banyak Model
 
